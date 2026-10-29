@@ -14,7 +14,7 @@ struct DeadlineMeta: View {
     var body: some View {
         if let d = store.deadline(id) {
             let days = store.daysLeft(d)
-            Text("🏔 \(d.label) \(d.doneAt == nil ? dDayText(days) : "끝")")
+            Text("🏔 \(d.label) \(d.doneAt == nil ? dDayText(days) : L("끝", "done"))")
                 .font(.cute(10, .semibold))
                 .foregroundStyle(d.doneAt == nil && days <= 3 ? Pal.coral : Pal.soft)
                 .fixedSize()
@@ -27,13 +27,13 @@ struct DeadlineMenu: View {
     var item: TodoItem
     var body: some View {
         if !store.activeDeadlines.isEmpty {
-            Menu("마감") {
+            Menu(L("마감", "Deadline")) {
                 ForEach(store.activeDeadlines) { d in
                     Button((item.deadlineID == d.id ? "✓ " : "") + d.name) { store.setDeadline(item.id, d.id) }
                 }
                 if item.deadlineID != nil {
                     Divider()
-                    Button("마감 없음") { store.setDeadline(item.id, nil) }
+                    Button(L("마감 없음", "No deadline")) { store.setDeadline(item.id, nil) }
                 }
             }
         }
@@ -57,7 +57,7 @@ struct DeadlineStrip: View {
                 editor
             } else if store.activeDeadlines.isEmpty {
                 Button { startAdding() } label: {
-                    Text("🏔  큰 일 · 마감 추가하기")
+                    Text(L("🏔  큰 일 · 마감 추가하기", "🏔  Add a big task with a deadline"))
                         .font(.cute(11, .bold))
                         .foregroundStyle(Pal.soft)
                         .frame(maxWidth: .infinity)
@@ -83,7 +83,7 @@ struct DeadlineStrip: View {
                                 .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
-                        .help("큰 일 · 마감 추가")
+                        .help(L("큰 일 · 마감 추가", "Add a big task with a deadline"))
                     }
                     .padding(.horizontal, 1)
                 }
@@ -102,7 +102,7 @@ struct DeadlineStrip: View {
                     .focused($focused)
                     .background(alignment: .leading) {
                         if draft.isEmpty {
-                            Text("논문 리뷰 11/5 ⏎")
+                            Text(L("논문 리뷰 11/5 ⏎", "Paper review 11/5 ⏎"))
                                 .font(.cute(12, .semibold))
                                 .foregroundStyle(Pal.soft)
                                 .allowsHitTesting(false)
@@ -117,7 +117,7 @@ struct DeadlineStrip: View {
             .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Pal.card))
             .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .strokeBorder(invalid ? Pal.coral : Pal.coral.opacity(0.5), lineWidth: 1.5))
-            Text(invalid ? "날짜도 같이 적어주세요 · 예: 10/28, 11월 5일" : "이름 뒤에 날짜를 적어요 · 비우고 ⏎ 하면 취소")
+            Text(invalid ? L("날짜도 같이 적어주세요 · 예: 10/28, 11월 5일", "Add a date too · e.g. 10/28, Nov 5") : L("이름 뒤에 날짜를 적어요 · 비우고 ⏎ 하면 취소", "Name, then date · empty ⏎ cancels"))
                 .font(.cute(9, .semibold))
                 .foregroundStyle(invalid ? Pal.coral : Pal.soft)
                 .padding(.leading, 4)
@@ -177,7 +177,7 @@ struct DeadlineCard: View {
                 .font(.cute(11, .bold))
                 .lineLimit(1)
             HStack(spacing: 4) {
-                Text(days < 0 ? "지남" : dDayText(days))
+                Text(days < 0 ? L("지남", "Overdue") : dDayText(days))
                     .font(.cute(11, .heavy))
                     .fixedSize()
                     .foregroundStyle(urgent ? Pal.coral : Pal.soft)
@@ -187,7 +187,7 @@ struct DeadlineCard: View {
                     Button {
                         withAnimation { store.finishDeadline(deadline.id) }
                     } label: {
-                        Text("✓ 다 했어요?")
+                        Text(L("✓ 다 했어요?", "✓ All done?"))
                             .font(.cute(9, .heavy))
                             .lineLimit(1)
                             .fixedSize()
@@ -196,12 +196,12 @@ struct DeadlineCard: View {
                             .foregroundStyle(Pal.ink.opacity(0.75))
                     }
                     .buttonStyle(.plain)
-                    .help("쪼갠 할 일을 다 끝냈어요 · 누르면 이 큰 일을 끝냄으로 정리해요")
+                    .help(L("쪼갠 할 일을 다 끝냈어요 · 누르면 이 큰 일을 끝냄으로 정리해요", "Every step is done · click to finish this big task"))
                 } else if p.total == 0 {
-                    Text("⚠︎ 안 쪼갬")
+                    Text(L("⚠︎ 안 쪼갬", "⚠︎ not split"))
                         .font(.cute(9, .bold))
                         .foregroundStyle(Pal.peach)
-                        .help("아직 쪼갠 할 일이 없어요 · 눌러서 쪼개기")
+                        .help(L("아직 쪼갠 할 일이 없어요 · 눌러서 쪼개기", "No steps yet · click to break it down"))
                 } else if p.total <= 5 {
                     HStack(spacing: 2) {
                         ForEach(0..<p.total, id: \.self) { i in
@@ -211,7 +211,7 @@ struct DeadlineCard: View {
                                 .frame(width: 6, height: 6)
                         }
                     }
-                    .help("쪼갠 할 일 \(p.total)개 중 \(p.done)개 완료")
+                    .help(L("쪼갠 할 일 \(p.total)개 중 \(p.done)개 완료", "\(p.done) of \(p.total) steps done"))
                 } else {
                     Text("\(p.done)/\(p.total)")
                         .font(.cute(9, .bold))
@@ -229,29 +229,29 @@ struct DeadlineCard: View {
         .onTapGesture {
             if days < 0 { askOverdue = true } else { onOpen() }
         }
-        .help(days < 0 ? "마감이 지났어요 · 눌러서 정리하기" : "\(deadline.due) 마감 · 눌러서 할 일로 쪼개기")
+        .help(days < 0 ? L("마감이 지났어요 · 눌러서 정리하기", "Past due · click to settle it") : L("\(deadline.due) 마감 · 눌러서 할 일로 쪼개기", "Due \(deadline.due) · click to break down"))
         .popover(isPresented: $askOverdue, arrowEdge: .bottom) {
             VStack(alignment: .leading, spacing: 6) {
-                Text("\(deadline.name) 마감이 지났어요").font(.cute(12, .bold))
-                Button("✓ 끝냈어요") { askOverdue = false; withAnimation { store.finishDeadline(deadline.id) } }
-                Button("하루 연장") { askOverdue = false; store.extendDeadline(deadline.id, days: 1) }
-                Button("3일 연장") { askOverdue = false; store.extendDeadline(deadline.id, days: 3) }
-                Button("일주일 연장") { askOverdue = false; store.extendDeadline(deadline.id, days: 7) }
+                Text(L("\(deadline.name) 마감이 지났어요", "\(deadline.name) is past due")).font(.cute(12, .bold))
+                Button(L("✓ 끝냈어요", "✓ Finished")) { askOverdue = false; withAnimation { store.finishDeadline(deadline.id) } }
+                Button(L("하루 연장", "Extend 1 day")) { askOverdue = false; store.extendDeadline(deadline.id, days: 1) }
+                Button(L("3일 연장", "Extend 3 days")) { askOverdue = false; store.extendDeadline(deadline.id, days: 3) }
+                Button(L("일주일 연장", "Extend 1 week")) { askOverdue = false; store.extendDeadline(deadline.id, days: 7) }
             }
             .buttonStyle(.link)
             .padding(12)
         }
         .contextMenu {
-            Button("할 일로 쪼개기") { onOpen() }
-            Button("✓ 끝냈어요") { withAnimation { store.finishDeadline(deadline.id) } }
-            Menu("연장") {
-                Button("하루") { store.extendDeadline(deadline.id, days: 1) }
-                Button("3일") { store.extendDeadline(deadline.id, days: 3) }
-                Button("일주일") { store.extendDeadline(deadline.id, days: 7) }
+            Button(L("할 일로 쪼개기", "Break down")) { onOpen() }
+            Button(L("✓ 끝냈어요", "✓ Finished")) { withAnimation { store.finishDeadline(deadline.id) } }
+            Menu(L("연장", "Extend")) {
+                Button(L("하루", "1 day")) { store.extendDeadline(deadline.id, days: 1) }
+                Button(L("3일", "3 days")) { store.extendDeadline(deadline.id, days: 3) }
+                Button(L("일주일", "1 week")) { store.extendDeadline(deadline.id, days: 7) }
             }
-            Button("이름 · 날짜 고치기") { onEdit() }
+            Button(L("이름 · 날짜 고치기", "Edit name · date")) { onEdit() }
             Divider()
-            Button("삭제", role: .destructive) { withAnimation { store.deleteDeadline(deadline.id) } }
+            Button(L("삭제", "Delete"), role: .destructive) { withAnimation { store.deleteDeadline(deadline.id) } }
         }
     }
 }

@@ -53,7 +53,7 @@ struct WidgetView: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text(dateTitle)
                     .font(.cute(17, .heavy))
-                Text(total == 0 ? "오늘은 뭘 해볼까요?" : "\(total)개 중 \(done)개 완료!")
+                Text(total == 0 ? L("오늘은 뭘 해볼까요?", "What's on for today?") : L("\(total)개 중 \(done)개 완료!", "\(done) of \(total) done!"))
                     .font(.cute(11, .medium))
                     .foregroundStyle(Pal.soft)
             }
@@ -67,8 +67,8 @@ struct WidgetView: View {
 
     private var tabs: some View {
         HStack(spacing: 6) {
-            TabPill(title: "☀️ 오늘", count: store.todayOpen.count, selected: tab == .today) { tab = .today }
-            TabPill(title: "💭 생각함", count: store.inbox.count, selected: tab == .inbox) { tab = .inbox }
+            TabPill(title: L("☀️ 오늘", "☀️ Today"), count: store.todayOpen.count, selected: tab == .today) { tab = .today }
+            TabPill(title: L("💭 생각함", "💭 Inbox"), count: store.inbox.count, selected: tab == .inbox) { tab = .inbox }
         }
         .padding(4)
         .background(Capsule().fill(Pal.line.opacity(0.7)))
@@ -76,8 +76,14 @@ struct WidgetView: View {
 
     private var dateTitle: String {
         let f = DateFormatter()
-        f.locale = Locale(identifier: "ko_KR")
-        f.dateFormat = "M월 d일 EEEE"
+        switch AppLanguage.current {
+        case .ko:
+            f.locale = Locale(identifier: "ko_KR")
+            f.dateFormat = "M월 d일 EEEE"
+        case .en:
+            f.locale = Locale(identifier: "en_US")
+            f.dateFormat = "EEEE, MMM d"
+        }
         return f.string(from: Date())
     }
 

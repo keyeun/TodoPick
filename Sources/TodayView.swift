@@ -9,9 +9,9 @@ struct TodayView: View {
 
     var body: some View {
         if store.todayOpen.isEmpty && store.todayDone.isEmpty {
-            EmptyState(emoji: "🌱", title: "아직 오늘 할 일이 없어요",
-                       subtitle: "생각함에서 오늘 할 일을 골라보세요",
-                       button: "골라보러 가기 →", action: goInbox)
+            EmptyState(emoji: "🌱", title: L("아직 오늘 할 일이 없어요", "Nothing picked for today"),
+                       subtitle: L("생각함에서 오늘 할 일을 골라보세요", "Pick a few from your inbox"),
+                       button: L("골라보러 가기 →", "Go pick →"), action: goInbox)
         } else {
             VStack(spacing: 6) {
             List {
@@ -24,7 +24,7 @@ struct TodayView: View {
                 .onMove { store.moveToday(from: $0, to: $1) }
 
                 if store.todayOpen.isEmpty {
-                    Text("오늘 할 일 끝! 푹 쉬어요 🛋️")
+                    Text(L("오늘 할 일 끝! 푹 쉬어요 🛋️", "All done for today! Rest up 🛋️"))
                         .font(.cute(12, .semibold))
                         .foregroundStyle(Pal.soft)
                         .frame(maxWidth: .infinity)
@@ -34,7 +34,7 @@ struct TodayView: View {
                 }
 
                 if !store.todayDone.isEmpty {
-                    Text("완료 \(store.todayDone.count)")
+                    Text(L("완료 \(store.todayDone.count)", "Done \(store.todayDone.count)"))
                         .font(.cute(11, .bold))
                         .foregroundStyle(Pal.soft)
                         .padding(.top, 6)
@@ -54,7 +54,7 @@ struct TodayView: View {
             .scrollIndicators(.never)
 
             if store.todayOpen.count > 1 {
-                Text("끌어서 순서를 바꿀 수 있어요 · 위가 먼저!")
+                Text(L("끌어서 순서를 바꿀 수 있어요 · 위가 먼저!", "Drag to reorder · top goes first!"))
                     .font(.cute(10, .medium))
                     .foregroundStyle(Pal.soft.opacity(0.8))
             }
@@ -106,7 +106,7 @@ struct TodayRow: View {
             TitleWithTag(item: item)
             Spacer(minLength: 4)
             if hover {
-                IconButton(symbol: "arrow.uturn.backward", help: "생각함으로 돌려보내기") {
+                IconButton(symbol: "arrow.uturn.backward", help: L("생각함으로 돌려보내기", "Send back to inbox")) {
                     withAnimation { store.unpick(item.id) }
                 }
             }
@@ -119,14 +119,14 @@ struct TodayRow: View {
         )
         .onHover { hover = $0 }
         .contextMenu {
-            Button("우선순위 올리기 ↑") { store.nudge(item.id, by: -1) }
-            Button("우선순위 내리기 ↓") { store.nudge(item.id, by: 1) }
+            Button(L("우선순위 올리기 ↑", "Move up ↑")) { store.nudge(item.id, by: -1) }
+            Button(L("우선순위 내리기 ↓", "Move down ↓")) { store.nudge(item.id, by: 1) }
             Divider()
             TagMenu(item: item)
             DeadlineMenu(item: item)
             Divider()
-            Button("생각함으로 돌려보내기") { store.unpick(item.id) }
-            Button("삭제", role: .destructive) { store.delete(item.id) }
+            Button(L("생각함으로 돌려보내기", "Send back to inbox")) { store.unpick(item.id) }
+            Button(L("삭제", "Delete"), role: .destructive) { store.delete(item.id) }
         }
     }
 }
@@ -148,8 +148,8 @@ struct DoneRow: View {
         }
         .padding(.horizontal, 10).padding(.vertical, 5)
         .contextMenu {
-            Button("다시 하기") { store.toggleDone(item.id) }
-            Button("삭제", role: .destructive) { store.delete(item.id) }
+            Button(L("다시 하기", "Not done yet")) { store.toggleDone(item.id) }
+            Button(L("삭제", "Delete"), role: .destructive) { store.delete(item.id) }
         }
     }
 }

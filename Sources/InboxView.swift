@@ -27,9 +27,9 @@ struct InboxView: View {
                     Text(dDayText(store.daysLeft(d)))
                         .font(.cute(11, .heavy))
                         .foregroundStyle(store.daysLeft(d) <= 3 ? Pal.coral : Pal.soft)
-                    Text("쪼개는 중").font(.cute(10, .semibold)).foregroundStyle(Pal.soft)
+                    Text(L("쪼개는 중", "breaking down")).font(.cute(10, .semibold)).foregroundStyle(Pal.soft)
                     Spacer()
-                    IconButton(symbol: "xmark", help: "전체 생각함 보기") {
+                    IconButton(symbol: "xmark", help: L("전체 생각함 보기", "Show whole inbox")) {
                         withAnimation(.spring(duration: 0.3)) { deadline = nil }
                     }
                 }
@@ -44,9 +44,9 @@ struct InboxView: View {
                     .focused($focused)
                     .background(alignment: .leading) {
                         if draft.isEmpty {
-                            Text(focusDeadline.map { "\($0.label) 쪼개서 하나씩 적고 ⏎" }
-                                 ?? selectedTag.map { "#\($0) 할 일 적고 ⏎" }
-                                 ?? "생각나는 대로 쭉 적고 ⏎")
+                            Text(focusDeadline.map { L("\($0.name) 쪼개서 하나씩 적고 ⏎", "Break \($0.name) into steps ⏎") }
+                                 ?? selectedTag.map { L("#\($0) 할 일 적고 ⏎", "Add a #\($0) to-do ⏎") }
+                                 ?? L("생각나는 대로 쭉 적고 ⏎", "Jot down anything ⏎"))
                                 .font(.cute(13, .medium))
                                 .foregroundStyle(Pal.soft)
                                 .allowsHitTesting(false)
@@ -71,11 +71,11 @@ struct InboxView: View {
             TagChips(selected: $selectedTag)
 
             if visible.isEmpty, let d = focusDeadline {
-                EmptyState(emoji: "🪓", title: "\(d.label), 어떻게 쪼개볼까요?",
-                           subtitle: "작게 나눈 할 일을 위에 하나씩 적어요")
+                EmptyState(emoji: "🪓", title: L("\(d.label), 어떻게 쪼개볼까요?", "How to break down \(d.label)?"),
+                           subtitle: L("작게 나눈 할 일을 위에 하나씩 적어요", "Add small steps above, one at a time"))
             } else if visible.isEmpty {
-                EmptyState(emoji: "☁️", title: "머릿속이 깨끗해요",
-                           subtitle: "떠오르는 일을 위에 쭉 적어두세요")
+                EmptyState(emoji: "☁️", title: L("머릿속이 깨끗해요", "Your mind is clear"),
+                           subtitle: L("떠오르는 일을 위에 쭉 적어두세요", "Jot down whatever comes to mind above"))
             } else {
                 ScrollView {
                     LazyVStack(spacing: 6) {
@@ -106,18 +106,18 @@ struct InboxRow: View {
                 Text("🔁\(item.bounced)")
                     .font(.cute(9, .bold))
                     .foregroundStyle(Pal.peach)
-                    .help("오늘 못 끝내서 \(item.bounced)번 돌아왔어요")
+                    .help(L("오늘 못 끝내서 \(item.bounced)번 돌아왔어요", "Came back unfinished \(item.bounced)×"))
             }
             Spacer(minLength: 4)
             if hover {
-                IconButton(symbol: "trash", help: "삭제") {
+                IconButton(symbol: "trash", help: L("삭제", "Delete")) {
                     withAnimation { store.delete(item.id) }
                 }
             }
             Button {
                 withAnimation(.spring(duration: 0.35)) { store.pick(item.id) }
             } label: {
-                Text("오늘 할래 ☀️")
+                Text(L("오늘 할래 ☀️", "Do today ☀️"))
                     .font(.cute(10, .heavy))
                     .padding(.horizontal, 8).padding(.vertical, 4)
                     .background(Capsule().fill(hover ? Pal.butter : Pal.butter.opacity(0.45)))
@@ -132,12 +132,12 @@ struct InboxRow: View {
         )
         .onHover { hover = $0 }
         .contextMenu {
-            Button("오늘 할래") { store.pick(item.id) }
-            Button("바로 완료") { store.toggleDone(item.id) }
+            Button(L("오늘 할래", "Do today")) { store.pick(item.id) }
+            Button(L("바로 완료", "Mark done")) { store.toggleDone(item.id) }
             TagMenu(item: item)
             DeadlineMenu(item: item)
             Divider()
-            Button("삭제", role: .destructive) { store.delete(item.id) }
+            Button(L("삭제", "Delete"), role: .destructive) { store.delete(item.id) }
         }
     }
 }

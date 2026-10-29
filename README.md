@@ -4,7 +4,7 @@
 
 **생각나는 대로 적고, 오늘 할 일만 골라서, 순서대로 하는 맥 바탕화면 위젯.**
 
-A tiny macOS desktop widget: dump every to-do as it comes to mind, pick today's few, order them, and let unfinished ones flow back automatically. Big deadlines sit on top so you remember to break them down. Everything stays on your Mac. (UI is in Korean.)
+A tiny macOS desktop widget: dump every to-do as it comes to mind, pick today's few, order them, and let unfinished ones flow back automatically. Big deadlines sit on top so you remember to break them down. Everything stays on your Mac. Korean and English UI — **[English README](README.en.md)**.
 
 <p align="center">
   <img src="docs/today.png" width="280" alt="오늘 탭">
@@ -63,13 +63,14 @@ cd TodoPick && ./build.sh install
 ```
 
 `install`을 실행하면 이렇게 돼요:
-1. 앱을 빌드해서 `~/Applications/TodoPick.app`에 넣어요.
-2. 앱을 실행해요.
-3. 로그인 시 자동 실행을 켜요.
+1. 처음 설치할 때 UI 언어(한국어 / English)를 물어봐요. `./build.sh install --lang ko`처럼 바로 정할 수도 있어요.
+2. 앱을 빌드해서 `~/Applications/TodoPick.app`에 넣어요.
+3. 앱을 실행해요.
+4. 로그인 시 자동 실행을 켜요.
 
 위젯은 화면 오른쪽 위에 나타나요. 배경을 끌어서 원하는 곳에 두면 돼요.
 
-업데이트할 때는 `git pull` 후 `./build.sh install`을 다시 실행하면 돼요. 데이터는 그대로 남아요.
+업데이트할 때는 `git pull` 후 `./build.sh install`을 다시 실행하면 돼요. 데이터와 언어 설정은 그대로 남아요.
 
 ## 사용법
 
@@ -81,7 +82,7 @@ cd TodoPick && ./build.sh install
 | `#종류` | `스쿼트 #운동` | 종류(태그) 지정 |
 | `@큰일` | `관련 연구 정리 @논문` | 그 큰 일에 묶기 (이름 첫 단어, 대소문자 무관) |
 | 같이 쓰기 | `리뷰 초안 #연구 @논문` | 종류 + 큰 일 |
-| 큰 일 추가 | `논문 리뷰 11/5` | 마감 띠의 `+`에서 입력. `11.5`, `11월 5일`, `2027-01-10`도 돼요 |
+| 큰 일 추가 | `논문 리뷰 11/5` | 마감 띠의 `+`에서 입력. `11.5`, `11월 5일`, `Nov 5`, `2027-01-10`도 돼요 |
 
 할 일을 **더블클릭**하면 고칠 수 있어요. 고칠 때 `#`, `@` 부분을 바꾸면 종류와 큰 일도 같이 바뀌어요.
 
@@ -101,7 +102,7 @@ cd TodoPick && ./build.sh install
 |---|---|
 | `⌃⌥T` | 위젯을 모든 창 위로 불러오기 / 다시 넣기 |
 | `Esc` | 위젯을 바탕화면으로 되돌리기 |
-| 메뉴 막대 아이콘 | 위젯 불러오기, 항상 위에 띄우기, 로그인 시 자동 실행, 데이터 폴더 열기, 종료 |
+| 메뉴 막대 아이콘 | 위젯 불러오기, 항상 위에 띄우기, 로그인 시 자동 실행, 언어, 데이터 폴더 열기, 종료 |
 
 ## 데이터와 프라이버시
 
@@ -158,8 +159,11 @@ WidgetKit 위젯에는 글자를 입력할 수 없어요. TodoPick은 생각나�
 **Q. 처음 실행할 때 "확인되지 않은 개발자" 경고가 떠요.**
 직접 빌드한 앱에서는 보통 뜨지 않아요. 다른 사람이 빌드한 `.app`을 받아 실행하면 뜰 수 있어요. 그래서 직접 빌드하는 걸 권해요.
 
-**Q. 다크 모드나 영어 UI는 없나요?**
-아직 없어요. 지금은 크림색 라이트 테마와 한국어만 지원해요.
+**Q. 언어를 바꾸고 싶어요.**
+메뉴 막대 아이콘 → `언어`에서 한국어 / English를 고르면 바로 바뀌어요. 다시 설치하면서 `./build.sh install --lang en`으로 바꿔도 돼요. 마감 날짜는 두 언어 모두 `11/5`, `11월 5일`, `Nov 5` 형식을 다 알아들어요.
+
+**Q. 다크 모드는 없나요?**
+아직 없어요. 지금은 크림색 라이트 테마만 지원해요.
 
 **Q. 지우고 싶어요.**
 ```bash
@@ -172,6 +176,7 @@ WidgetKit 위젯에는 글자를 입력할 수 없어요. TodoPick은 생각나�
 ```
 Sources/
   Model.swift         TodoItem, Deadline, #/@ 파싱, 날짜 파싱
+  Strings.swift       언어 설정과 L("한국어", "English") 도우미
   Store.swift         저장·이월·아카이브·마감 로직 (TodoStore)
   App.swift           창, 단축키, 메뉴 막대
   WidgetView.swift    위젯 전체 레이아웃
@@ -188,9 +193,11 @@ Resources/
 ```bash
 ./build.sh               # 빌드만 (build/TodoPick.app)
 ./build.sh test          # 로직 테스트 (임시 폴더 사용, 내 데이터는 안 건드림)
-./build.sh screenshots   # docs/*.png 다시 그리기
+./build.sh screenshots   # docs/*.png (한국어), docs/en/*.png (영어) 다시 그리기
 ./build.sh check-offline # 네트워크 코드 없는지 검사
 ```
+
+화면에 보이는 글자는 모두 [`Sources/Strings.swift`](Sources/Strings.swift)의 `L("한국어", "English")`로 감싸요. 새 문구를 넣을 때 두 언어를 같이 적어주세요.
 
 `TODOPICK_DIR=/some/folder` 환경 변수를 주면 다른 데이터 폴더로 실행할 수 있어요. 테스트할 때 내 데이터를 건드리지 않으려고 넣은 기능이에요.
 

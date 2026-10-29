@@ -3,6 +3,7 @@
 #
 #   ./build.sh               build build/TodoPick.app
 #   ./build.sh install       build, copy to ~/Applications, launch, turn on launch at login
+#                            add --lang ko or --lang en to pick the UI language (asked on first install)
 #   ./build.sh uninstall     turn off launch at login and remove the app (your data stays)
 #   ./build.sh test          run the logic tests
 #   ./build.sh screenshots   render docs/*.png from sample data (never your real data)
@@ -12,6 +13,7 @@ cd "$(dirname "$0")"
 
 APP=build/TodoPick.app
 DEST="$HOME/Applications/TodoPick.app"
+BUNDLE_ID=local.todopick.widget
 TARGET="$(uname -m)-apple-macosx14.0"
 SWIFTC=(swiftc -parse-as-library -swift-version 5 -target "$TARGET")
 
@@ -66,9 +68,23 @@ case "$1" in
     build_app
     ;;
   install)
+    LANG_CHOICE=""
+    [[ "$2" == "--lang" ]] && LANG_CHOICE="$3"
+    if [[ -n "$LANG_CHOICE" && "$LANG_CHOICE" != "ko" && "$LANG_CHOICE" != "en" ]]; then
+      echo "--lang must be ko or en"; exit 1
+    fi
+    # First install without --lang: ask. Later installs keep the saved choice.
+    if [[ -z "$LANG_CHOICE" ]] && ! defaults read "$BUNDLE_ID" language >/dev/null 2>&1 && [[ -t 0 ]]; then
+      echo "UI language / 언어를 골라주세요:"
+      echo "  1) 한국어"
+      echo "  2) English"
+      read "pick?> "
+      [[ "$pick" == "2" ]] && LANG_CHOICE=en || LANG_CHOICE=ko
+    fi
     build_app
     pkill -x TodoPick || true
     sleep 1
+    [[ -n "$LANG_CHOICE" ]] && defaults write "$BUNDLE_ID" language "$LANG_CHOICE"
     mkdir -p "$HOME/Applications"
     rm -rf "$DEST"
     cp -R "$APP" "$DEST"
@@ -108,7 +124,7 @@ case "$1" in
     echo "✅ No networking code in Sources/ — TodoPick never sends your data anywhere."
     ;;
   *)
-    echo "usage: ./build.sh [install|uninstall|test|screenshots|check-offline]"
+    echo "usage: ./build.sh [install [--lang ko|en]|uninstall|test|screenshots|check-offline]"
     exit 1
     ;;
 esac

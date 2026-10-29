@@ -28,7 +28,7 @@ struct EditableTitle: View {
                         + (store.deadline(item.deadlineID).map { " @\($0.label)" } ?? "")
                     editing = true
                 }
-                .help("더블클릭해서 고치기 · #종류 · @마감")
+                .help(L("더블클릭해서 고치기 · #종류 · @마감", "Double-click to edit · #type · @deadline"))
         }
     }
 

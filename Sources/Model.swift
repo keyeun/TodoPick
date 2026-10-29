@@ -66,18 +66,22 @@ func parseTag(_ text: String) -> (title: String, tag: String?, mention: String?)
     return (words.joined(separator: " "), tag, mention)
 }
 
-/// "논문 리뷰 11/5", "기말 프로젝트 12.10", "보고서 11월 3일", "X 2027-01-10" → name + "yyyy-MM-dd".
+/// "논문 리뷰 11/5", "기말 프로젝트 12.10", "보고서 11월 3일", "Paper review Nov 5", "X 2027-01-10"
+/// → name + "yyyy-MM-dd".
 func parseDeadline(_ text: String, today: Date = Date()) -> (name: String, due: String)? {
     let cal = Calendar(identifier: .gregorian)
     let patterns = [
         #"(\d{4})-(\d{1,2})-(\d{1,2})"#,
         #"(\d{1,2})\s*월\s*(\d{1,2})\s*일?"#,
+        #"(?i)\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s*(\d{1,2})(?:st|nd|rd|th)?\b"#,
         #"(\d{1,2})[/.](\d{1,2})"#,
     ]
     for pattern in patterns {
         guard let re = try? NSRegularExpression(pattern: pattern),
               let m = re.matches(in: text, range: NSRange(text.startIndex..., in: text)).last else { continue }
-        let nums = (1..<m.numberOfRanges).compactMap { Range(m.range(at: $0), in: text).flatMap { Int(text[$0]) } }
+        let nums = (1..<m.numberOfRanges).compactMap { i in
+            Range(m.range(at: i), in: text).flatMap { Int(text[$0]) ?? monthNumber(String(text[$0])) }
+        }
         var comps = DateComponents()
         if nums.count == 3 {
             comps.year = nums[0]; comps.month = nums[1]; comps.day = nums[2]
@@ -96,4 +100,10 @@ func parseDeadline(_ text: String, today: Date = Date()) -> (name: String, due: 
         return (name, TodoStore.dayKey(date))
     }
     return nil
+}
+
+/// "Nov", "november" → 11.
+private func monthNumber(_ name: String) -> Int? {
+    let months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
+    return months.firstIndex(of: String(name.lowercased().prefix(3))).map { $0 + 1 }
 }

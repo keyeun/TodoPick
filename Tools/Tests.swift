@@ -40,6 +40,9 @@ struct Tests {
         check(parseDeadline("없는 날 2/30") == nil, "invalid date rejected")
         let jan = parseDeadline("겨울 학회 1/10", today: Calendar(identifier: .gregorian).date(from: DateComponents(year: year, month: 10, day: 20))!)
         check(jan?.due == "\(year + 1)-01-10", "past month rolls to next year")
+        check(parseDeadline("Paper review Nov 5")?.due.hasSuffix("-11-05") == true, "English month")
+        check(parseDeadline("Paper review Nov 5")?.name == "Paper review", "English month name removed")
+        check(parseDeadline("Report due December 3rd")?.due.hasSuffix("-12-03") == true, "full month + ordinal")
         let p = parseTag("리뷰 초안 #연구 @논문")
         check(p.title == "리뷰 초안" && p.tag == "연구" && p.mention == "논문", "#tag and @deadline")
 
@@ -114,6 +117,13 @@ struct Tests {
             s.forgetTag("운동")
             check(!s.knownTags.contains("운동"), "forgotten tag removed")
         }
+
+        print("language")
+        UserDefaults.standard.set("en", forKey: AppLanguage.defaultsKey)
+        check(L("오늘", "Today") == "Today", "English selected")
+        UserDefaults.standard.set("ko", forKey: AppLanguage.defaultsKey)
+        check(L("오늘", "Today") == "오늘", "Korean selected")
+        UserDefaults.standard.removeObject(forKey: AppLanguage.defaultsKey)
 
         print(failures == 0 ? "\n✅ All tests passed" : "\n❌ \(failures) failed")
         exit(failures == 0 ? 0 : 1)

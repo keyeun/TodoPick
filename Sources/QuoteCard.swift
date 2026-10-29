@@ -21,7 +21,7 @@ struct QuoteCard: View {
                     .focused($focused)
                     .background(alignment: .topLeading) {
                         if text.isEmpty {
-                            Text("오늘의 한마디를 적어요 ⏎")
+                            Text(L("오늘의 한마디를 적어요 ⏎", "Today's note to self ⏎"))
                                 .font(.cute(12, .semibold))
                                 .foregroundStyle(Pal.soft)
                                 .allowsHitTesting(false)
@@ -38,12 +38,12 @@ struct QuoteCard: View {
                             .fixedSize(horizontal: false, vertical: true)
                             .lineLimit(3)
                         if !quote.isToday {
-                            Text("✏️ 오늘의 한마디를 새로 써볼까요?")
+                            Text(L("✏️ 오늘의 한마디를 새로 써볼까요?", "✏️ Write a new note for today?"))
                                 .font(.cute(9, .bold))
                                 .foregroundStyle(Pal.coral)
                         }
                     } else {
-                        Text("오늘의 한마디를 적어보세요")
+                        Text(L("오늘의 한마디를 적어보세요", "Write a note to yourself for today"))
                             .font(.cute(12, .semibold))
                             .foregroundStyle(Pal.soft)
                     }
@@ -67,7 +67,7 @@ struct QuoteCard: View {
             text = (quote?.isToday ?? false) ? quote!.text : ""
             editing = true
         }
-        .help("클릭해서 오늘의 한마디 쓰기")
+        .help(L("클릭해서 오늘의 한마디 쓰기", "Click to write today's note"))
     }
 
     private func commit() {

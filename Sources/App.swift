@@ -45,7 +45,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        let host = NSHostingView(rootView: WidgetView().environmentObject(store))
+        let host = NSHostingView(rootView: LocalizedRoot().environmentObject(store))
         window = WidgetWindow(contentRect: NSRect(origin: .zero, size: host.fittingSize),
                               styleMask: [.borderless],
                               backing: .buffered, defer: false)
@@ -162,16 +162,23 @@ struct MenuBarLabel: View {
     }
 }
 
+/// Rebuilds the whole widget when the UI language changes.
+struct LocalizedRoot: View {
+    @AppStorage(AppLanguage.defaultsKey) private var language = ""
+    var body: some View { WidgetView().id(language) }
+}
+
 struct MenuContent: View {
     let delegate: AppDelegate
     @State private var onTop = UserDefaults.standard.bool(forKey: "floatsOnTop")
     @State private var atLogin = SMAppService.mainApp.status == .enabled
+    @AppStorage(AppLanguage.defaultsKey) private var language = ""
 
     var body: some View {
-        Button("위젯 앞으로 불러오기  \(AppDelegate.shortcutLabel)") { delegate.showWidget() }
-        Toggle("항상 위에 띄우기", isOn: $onTop)
+        Button(L("위젯 앞으로 불러오기  \(AppDelegate.shortcutLabel)", "Bring widget to front  \(AppDelegate.shortcutLabel)")) { delegate.showWidget() }
+        Toggle(L("항상 위에 띄우기", "Always on top"), isOn: $onTop)
             .onChange(of: onTop) { _, v in delegate.floatsOnTop = v }
-        Toggle("로그인 시 자동 실행", isOn: $atLogin)
+        Toggle(L("로그인 시 자동 실행", "Open at login"), isOn: $atLogin)
             .onChange(of: atLogin) { _, v in
                 do {
                     if v { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
@@ -179,9 +186,15 @@ struct MenuContent: View {
                     atLogin = SMAppService.mainApp.status == .enabled
                 }
             }
+        Picker(L("언어", "Language"), selection: Binding(
+            get: { AppLanguage.current.rawValue },
+            set: { language = $0 }
+        )) {
+            ForEach(AppLanguage.allCases, id: \.self) { Text($0.displayName).tag($0.rawValue) }
+        }
         Divider()
-        Button("데이터 폴더 열기") { NSWorkspace.shared.open(delegate.store.dataDir) }
+        Button(L("데이터 폴더 열기", "Open data folder")) { NSWorkspace.shared.open(delegate.store.dataDir) }
         Divider()
-        Button("종료") { NSApp.terminate(nil) }.keyboardShortcut("q")
+        Button(L("종료", "Quit")) { NSApp.terminate(nil) }.keyboardShortcut("q")
     }
 }

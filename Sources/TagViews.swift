@@ -38,13 +38,13 @@ struct TagMenu: View {
     @EnvironmentObject var store: TodoStore
     var item: TodoItem
     var body: some View {
-        Menu("종류") {
+        Menu(L("종류", "Type")) {
             ForEach(store.knownTags, id: \.self) { tag in
                 Button((item.tag == tag ? "✓ " : "") + tag) { store.setTag(item.id, tag) }
             }
             if item.tag != nil {
                 Divider()
-                Button("종류 없음") { store.setTag(item.id, nil) }
+                Button(L("종류 없음", "No type")) { store.setTag(item.id, nil) }
             }
         }
     }
@@ -58,7 +58,7 @@ struct TagChips: View {
     var body: some View {
         let tags = store.knownTags
         if tags.isEmpty {
-            Text("#운동 처럼 붙여 적으면 종류가 생겨요")
+            Text(L("#운동 처럼 붙여 적으면 종류가 생겨요", "Add a word like #gym to create a type"))
                 .font(.cute(10, .medium))
                 .foregroundStyle(Pal.soft)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -81,7 +81,7 @@ struct TagChips: View {
                         }
                         .buttonStyle(.plain)
                         .contextMenu {
-                            Button("이 종류 지우기", role: .destructive) {
+                            Button(L("이 종류 지우기", "Remove this type"), role: .destructive) {
                                 if selected == tag { selected = nil }
                                 store.forgetTag(tag)
                             }
