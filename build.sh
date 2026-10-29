@@ -7,6 +7,7 @@
 #   ./build.sh uninstall     turn off launch at login and remove the app (your data stays)
 #   ./build.sh test          run the logic tests
 #   ./build.sh screenshots   render docs/*.png from sample data (never your real data)
+#   ./build.sh gifs          record docs/demo-*.gif from scripted sample data
 #   ./build.sh check-offline confirm the source contains no networking code
 set -e
 cd "$(dirname "$0")"
@@ -114,6 +115,13 @@ case "$1" in
     TODOPICK_DIR="$TMP" build/todopick-screenshots docs
     rm -rf "$TMP"
     ;;
+  gifs)
+    build_tool Tools/Gifs.swift build/todopick-gifs
+    TMP=$(mktemp -d)
+    mkdir -p docs
+    TODOPICK_DIR="$TMP" build/todopick-gifs docs "${@:2}"
+    rm -rf "$TMP"
+    ;;
   check-offline)
     # Any of these would mean the app could talk to the internet.
     PATTERN='URLSession|URLRequest|NWConnection|NWPathMonitor|import Network|CFNetwork|WKWebView|NSURLConnection|CloudKit|NSUbiquitous|https?://'
@@ -124,7 +132,7 @@ case "$1" in
     echo "✅ No networking code in Sources/ — TodoPick never sends your data anywhere."
     ;;
   *)
-    echo "usage: ./build.sh [install [--lang ko|en]|uninstall|test|screenshots|check-offline]"
+    echo "usage: ./build.sh [install [--lang ko|en]|uninstall|test|screenshots|gifs|check-offline]"
     exit 1
     ;;
 esac

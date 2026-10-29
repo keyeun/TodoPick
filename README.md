@@ -7,9 +7,8 @@
 A tiny macOS desktop widget: dump every to-do as it comes to mind, pick today's few, order them, and let unfinished ones flow back automatically. Big deadlines sit on top so you remember to break them down. Everything stays on your Mac. Korean and English UI — **[English README](README.en.md)**.
 
 <p align="center">
-  <img src="docs/today.png" width="280" alt="오늘 탭">
-  <img src="docs/inbox.png" width="280" alt="생각함 탭">
-  <img src="docs/breakdown.png" width="280" alt="마감 쪼개기">
+  <img src="docs/demo-today.gif" width="340" alt="생각함에 적고, 오늘로 고르고, 순서 정하기">
+  <img src="docs/demo-deadline.gif" width="340" alt="큰 일을 추가하고 작게 쪼개기">
 </p>
 
 ---
@@ -30,6 +29,12 @@ TodoPick은 하루를 이렇게 굴리려고 만들었어요:
 여기에 매일 스스로에게 남기는 **오늘의 한마디**를 위젯 아래에 붙였습니다.
 
 ## 기능
+
+<p align="center">
+  <img src="docs/today.png" width="280" alt="오늘 탭">
+  <img src="docs/inbox.png" width="280" alt="생각함 탭">
+  <img src="docs/breakdown.png" width="280" alt="마감 쪼개기">
+</p>
 
 - **💭 생각함**: 날짜 없이 쭉 적는 곳이에요. 한 줄에 하나씩 적고 ⏎를 누르면 돼요.
 - **☀️ 오늘**: 생각함에서 `오늘 할래`로 고른 것들이 모여요. 끌어서 순서를 바꿀 수 있어요.
@@ -185,6 +190,7 @@ Sources/
 Tools/
   Tests.swift         로직 테스트
   Screenshots.swift   README 스크린샷 (가짜 예시 데이터)
+  Gifs.swift          README 사용 GIF (화면 녹화 없이 장면을 그려서 만들어요)
   make_icon.py        Resources/icon-source.webp → AppIcon.png (macOS 아이콘 규격)
 Resources/
   AppIcon.png         앱 아이콘 (빌드할 때 .icns로 변환돼요)
@@ -194,6 +200,7 @@ Resources/
 ./build.sh               # 빌드만 (build/TodoPick.app)
 ./build.sh test          # 로직 테스트 (임시 폴더 사용, 내 데이터는 안 건드림)
 ./build.sh screenshots   # docs/*.png (한국어), docs/en/*.png (영어) 다시 그리기
+./build.sh gifs          # docs/demo-*.gif 사용 GIF 다시 만들기 (예시 데이터로 자동 녹화)
 ./build.sh check-offline # 네트워크 코드 없는지 검사
 ```
 

@@ -6,6 +6,7 @@ import AppKit
 struct InboxView: View {
     @EnvironmentObject var store: TodoStore
     @State private var draft = ""
+    @Environment(\.demoInput) private var demo
     @Binding var deadline: UUID?
     @State private var selectedTag: String? = nil
     @FocusState private var focused: Bool
@@ -38,6 +39,9 @@ struct InboxView: View {
             HStack(spacing: 8) {
                 Image(systemName: "pencil.line")
                     .foregroundStyle(Pal.coral)
+                if let typed = demo.inbox, !typed.isEmpty {
+                    DemoTypedText(text: typed, font: .cute(13, .medium))
+                } else {
                 TextField("", text: $draft)
                     .textFieldStyle(.plain)
                     .font(.cute(13, .medium))
@@ -57,6 +61,7 @@ struct InboxView: View {
                         draft = ""
                         focused = true
                     }
+                }
             }
             .padding(.horizontal, 12).padding(.vertical, 10)
             .background(
@@ -64,7 +69,8 @@ struct InboxView: View {
                     .fill(Pal.card)
                     .overlay(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .strokeBorder(focused ? Pal.coral.opacity(0.6) : Pal.line, style: StrokeStyle(lineWidth: 1.5, dash: focused ? [] : [4, 3]))
+                            .strokeBorder(focused || demo.inbox != nil ? Pal.coral.opacity(0.6) : Pal.line,
+                                          style: StrokeStyle(lineWidth: 1.5, dash: focused || demo.inbox != nil ? [] : [4, 3]))
                     )
             )
 

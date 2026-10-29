@@ -7,9 +7,8 @@
 [한국어 README](README.md)
 
 <p align="center">
-  <img src="docs/en/today.png" width="280" alt="Today tab">
-  <img src="docs/en/inbox.png" width="280" alt="Inbox tab">
-  <img src="docs/en/breakdown.png" width="280" alt="Breaking down a deadline">
+  <img src="docs/en/demo-today.gif" width="340" alt="Jot down, pick for today, reorder">
+  <img src="docs/en/demo-deadline.gif" width="340" alt="Add a big task and break it down">
 </p>
 
 ---
@@ -30,6 +29,12 @@ Big tasks with deadlines (a paper review, a final project) don't move until you 
 And a **note to yourself for today** stays at the bottom.
 
 ## Features
+
+<p align="center">
+  <img src="docs/en/today.png" width="280" alt="Today tab">
+  <img src="docs/en/inbox.png" width="280" alt="Inbox tab">
+  <img src="docs/en/breakdown.png" width="280" alt="Breaking down a deadline">
+</p>
 
 - **💭 Inbox**: dump to-dos without dates, one per line + ⏎.
 - **☀️ Today**: pick with `Do today`, drag to reorder.
@@ -167,6 +172,7 @@ This turns off launch at login and removes the app. Delete `~/Library/Applicatio
 ./build.sh               # build only (build/TodoPick.app)
 ./build.sh test          # logic tests (temp folder; never touches your data)
 ./build.sh screenshots   # redraw docs/*.png (Korean) and docs/en/*.png (English)
+./build.sh gifs          # re-record the demo GIFs in docs/ from scripted sample data
 ./build.sh check-offline # confirm there's no networking code
 ```
 

@@ -50,6 +50,7 @@ struct DeadlineStrip: View {
     @State private var draft = ""
     @State private var invalid = false
     @FocusState private var focused: Bool
+    @Environment(\.demoInput) private var demo
 
     var body: some View {
         Group {
@@ -90,12 +91,18 @@ struct DeadlineStrip: View {
                 .scrollIndicators(.never)
             }
         }
+        .onAppear {
+            if demo.deadline != nil { adding = true }
+        }
     }
 
     private var editor: some View {
         VStack(alignment: .leading, spacing: 3) {
             HStack(spacing: 6) {
                 Text("🏔").font(.system(size: 12))
+                if let typed = demo.deadline, !typed.isEmpty {
+                    DemoTypedText(text: typed, font: .cute(12, .semibold))
+                } else {
                 TextField("", text: $draft)
                     .textFieldStyle(.plain)
                     .font(.cute(12, .semibold))
@@ -112,6 +119,7 @@ struct DeadlineStrip: View {
                     .onChange(of: focused) { _, f in if !f { close() } }
                     .onChange(of: draft) { _, _ in invalid = false }
                     .onAppear { focused = true }
+                }
             }
             .padding(.horizontal, 10).padding(.vertical, 8)
             .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Pal.card))
