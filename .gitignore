@@ -1,0 +1,13 @@
+# Build output
+build/
+
+# Never commit personal data, even if copied here for debugging
+tasks.json
+deadlines.json
+quotes.json
+tags.json
+archive/
+*.jsonl
+
+# macOS
+.DS_Store
