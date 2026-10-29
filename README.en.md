@@ -55,7 +55,7 @@ xcode-select --install
 ```
 
 ```bash
-git clone https://github.com/<your-id>/TodoPick.git
+git clone https://github.com/keyeun/TodoPick.git
 ```
 
 ```bash
